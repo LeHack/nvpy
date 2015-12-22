@@ -2,19 +2,15 @@
 # copyright 2012 by Charl P. Botha <cpbotha@vxlabs.com>
 # new BSD license
 
-import copy
 import logging
 import os
 import re
 import search_entry
-import sys
 import tk
 import tkFont
 import tkMessageBox
 import utils
 import webbrowser
-
-from datetime import datetime
 
 
 class WidgetRedirector:
@@ -49,7 +45,7 @@ class WidgetRedirector:
 
     def register(self, name, function):
         if name in self.dict:
-            previous = dict[name]
+            previous = self.dict[name]
 
         else:
             previous = OriginalCommand(self, name)
@@ -797,7 +793,7 @@ class View(utils.SubjectMixin):
 
         self.text_note.bind("<Control-a>", self.cmd_select_all)
 
-	self.tags_entry.bind("<Return>", self.handler_add_tags_to_selected_note)
+        self.tags_entry.bind("<Return>", self.handler_add_tags_to_selected_note)
         self.tags_entry.bind("<Escape>", lambda e: self.text_note.focus())
 
         self.pinned_checkbutton_var.trace('w', self.handler_pinned_checkbutton)
@@ -1426,7 +1422,7 @@ class View(utils.SubjectMixin):
 
         tags = note.get('tags', [])
         
-	# get list of string tags from ui
+        # get list of string tags from ui
         tag_elements = self.note_existing_tags_frame.children.values() 
         ui_tags = [element['text'].replace(' x', '') for element in tag_elements]
 
@@ -1504,13 +1500,17 @@ class View(utils.SubjectMixin):
 
             # default to an empty array for tags
             tags = note.get('tags', [])
-		
-	    for tag_button in self.note_existing_tags_frame.children.values():
-		tag_button.destroy()
-	
-	    for tag in tags:
-        	tag_button = tk.Button(self.note_existing_tags_frame, text=tag + " x", command=lambda tag=tag: self.handler_delete_tag_from_selected_note(tag))
-        	tag_button.pack(side=tk.LEFT)
+
+        else:
+            # note is None - for tags machinery further down, we have empty list
+            tags = []
+
+        for tag_button in self.note_existing_tags_frame.children.values():
+            tag_button.destroy()
+
+        for tag in tags:
+            tag_button = tk.Button(self.note_existing_tags_frame, text=tag + " x", command=lambda tag=tag: self.handler_delete_tag_from_selected_note(tag))
+            tag_button.pack(side=tk.LEFT)
         
             #self.tags_entry_var.set(','.join(tags))
             self.pinned_checkbutton_var.set(utils.note_pinned(note))
